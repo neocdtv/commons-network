@@ -2,6 +2,7 @@ package io.neocdtv.commons.network;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -32,4 +33,18 @@ public class NetworkUtil {
     }
     return addresses;
   }
+
+  public Inet4Address getIpv4AddressForInterface(final String interfaceName) throws SocketException {
+    NetworkInterface networkInterface = NetworkInterface.getByName(interfaceName);
+    if (networkInterface.isUp()) {
+      for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
+        InetAddress address = interfaceAddress.getAddress();
+        if (address instanceof Inet4Address) {
+          return (Inet4Address) address;
+        }
+      }
+    }
+    throw new RuntimeException("Unable to access IPv4 address for interface named: " + interfaceName);
+  }
 }
+
